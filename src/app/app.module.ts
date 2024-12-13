@@ -8,16 +8,19 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `../../${process.env.NODE_ENV}.env`,
       isGlobal: true,
+      envFilePath: `${__dirname}/../../.env`,
     }),
     MongooseModule.forRoot(
-      // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@assessment.vimfr.mongodb.net/?retryWrites=true&w=majority&appName=assessment`,
-      `mongodb+srv://${`ashishsaini9656`}:${`ashishsaini9656`}@assessment.vimfr.mongodb.net/?retryWrites=true&w=majority&appName=assessment`,
+      `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@assessment.vimfr.mongodb.net/?retryWrites=true&w=majority&appName=assessment`,
     ),
     AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    // console.log(process.env);
+  }
+}

@@ -11,7 +11,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Auth } from '../entities/auth.entity';
 import mongoose, { Model } from 'mongoose';
 import { getUserByIdDto } from '../dto/all-auth.dto';
-
 @Injectable()
 export class AuthService {
   constructor(@InjectModel('Auth') private AuthModel: Model<Auth>) {}
