@@ -12,7 +12,7 @@ import {
 import { AuthService } from '../service/auth.service';
 import { CreateAuthDto } from '../dto/create-auth.dto';
 import { UpdateAuthDto } from '../dto/update-auth.dto';
-import { getUserByIdDto } from '../dto/all-auth.dto';
+import { getUserByIdDto, LoginBodyDto } from '../dto/all-auth.dto';
 
 @Controller('auth')
 @UsePipes(
@@ -29,8 +29,12 @@ export class AuthController {
   async create(@Body() createAuthDto: CreateAuthDto) {
     return await this.authService.create(createAuthDto);
   }
+  @Post('/login')
+  async login(@Body() loginBody: LoginBodyDto) {
+    return await this.authService.login(loginBody);
+  }
 
-  @Get('getAllUsers')
+  @Get('/getAllUsers')
   async findAll() {
     return await this.authService.findAll();
   }
@@ -48,7 +52,7 @@ export class AuthController {
     return await this.authService.update(id, updateAuthDto);
   }
 
-  @Delete('deleteUserById/:id')
+  @Delete('/deleteUserById/:id')
   async remove(@Param() id: getUserByIdDto) {
     return await this.authService.remove(id);
   }
