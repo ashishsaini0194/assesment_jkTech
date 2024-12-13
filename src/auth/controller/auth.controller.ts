@@ -6,12 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { CreateAuthDto } from '../dto/create-auth.dto';
 import { UpdateAuthDto } from '../dto/update-auth.dto';
+import { getUserByIdDto } from '../dto/all-auth.dto';
 
 @Controller('auth')
+@UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true }))
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -26,8 +30,8 @@ export class AuthController {
   }
 
   @Get('/getUserById/:id')
-  async findOne(@Param('id') id: string) {
-    return await this.authService.findOne(+id);
+  async findOne(@Param() id: getUserByIdDto) {
+    return await this.authService.findOne(id);
   }
 
   @Patch('/updateUserById/:id')

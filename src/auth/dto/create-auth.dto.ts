@@ -6,10 +6,9 @@ export class CreateAuthDto {
   name: string;
 
   @IsEmail()
-  @IsNotEmpty({ message: 'name can not be empty!' })
   email: string;
 
   @IsString({ always: true })
-  @IsNotEmpty({ message: 'name can not be empty!' })
+  @IsNotEmpty({ message: 'password can not be empty!' })
   password: string;
 }

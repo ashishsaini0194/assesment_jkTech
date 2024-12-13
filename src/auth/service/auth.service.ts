@@ -1,35 +1,77 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateAuthDto } from '../dto/create-auth.dto';
 import { UpdateAuthDto } from '../dto/update-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Auth } from '../entities/auth.entity';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
+import { getUserByIdDto } from '../dto/all-auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(@InjectModel('Auth') private AuthModel: Model<Auth>) {}
 
   async create(createAuthDto: CreateAuthDto) {
-    return await this.AuthModel.create(createAuthDto);
+    try {
+      console.log('service');
+      const ifExist = await this.AuthModel.findOne(
+        {
+          email: createAuthDto.email,
+        },
+        { email: 1 },
+      );
+      if (ifExist)
+        throw new HttpException('Email Already Exist!', HttpStatus.CONFLICT);
+      return await this.AuthModel.create(createAuthDto);
+    } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new HttpException(JSON.stringify(e), HttpStatus.BAD_REQUEST);
+    }
   }
 
   async findAll() {
-    console.log('hehe');
     try {
       return await this.AuthModel.find({}, {})
         .limit(10)
         .sort({ created_at: -1 });
     } catch (e) {
-      throw e;
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new HttpException(JSON.stringify(e), HttpStatus.BAD_REQUEST);
     }
   }
 
-  async findOne(id: number) {
-    return await this.AuthModel.findById(id);
+  async findOne(id: getUserByIdDto) {
+    try {
+      const toMongoId = new mongoose.Types.ObjectId(id.id);
+      return await this.AuthModel.findOne({
+        _id: toMongoId,
+      });
+    } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new HttpException(JSON.stringify(e), HttpStatus.BAD_REQUEST);
+    }
   }
 
   async update(id: number, updateAuthDto: UpdateAuthDto) {
-    // return await this.AuthModel.updateOne({})
+    try {
+      // return await this.AuthModel.updateOne({})
+    } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new HttpException(JSON.stringify(e), HttpStatus.BAD_REQUEST);
+    }
   }
 
   async remove(id: number) {
