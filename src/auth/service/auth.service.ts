@@ -63,9 +63,9 @@ export class AuthService {
     }
   }
 
-  async update(id: number, updateAuthDto: UpdateAuthDto) {
+  async update(id: getUserByIdDto, updateAuthDto: UpdateAuthDto) {
     try {
-      // return await this.AuthModel.updateOne({})
+      return await this.AuthModel.updateOne({ _id: id.id }, updateAuthDto);
     } catch (e) {
       if (e instanceof HttpException) {
         throw e;
@@ -74,7 +74,17 @@ export class AuthService {
     }
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async remove(id: getUserByIdDto) {
+    try {
+      const data = await this.AuthModel.deleteOne({ _id: id.id });
+      if (!data.deletedCount)
+        throw new HttpException('No user Found!', HttpStatus.BAD_REQUEST);
+      return { message: 'User Deleted Successfully!' };
+    } catch (e) {
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new HttpException(JSON.stringify(e), HttpStatus.BAD_REQUEST);
+    }
   }
 }

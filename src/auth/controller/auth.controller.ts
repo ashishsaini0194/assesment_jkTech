@@ -15,7 +15,13 @@ import { UpdateAuthDto } from '../dto/update-auth.dto';
 import { getUserByIdDto } from '../dto/all-auth.dto';
 
 @Controller('auth')
-@UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true }))
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    forbidNonWhitelisted: true,
+    whitelist: true,
+  }),
+)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -35,12 +41,15 @@ export class AuthController {
   }
 
   @Patch('/updateUserById/:id')
-  async update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return await this.authService.update(+id, updateAuthDto);
+  async update(
+    @Param() id: getUserByIdDto,
+    @Body() updateAuthDto: UpdateAuthDto,
+  ) {
+    return await this.authService.update(id, updateAuthDto);
   }
 
   @Delete('deleteUserById/:id')
-  async remove(@Param('id') id: string) {
-    return await this.authService.remove(+id);
+  async remove(@Param() id: getUserByIdDto) {
+    return await this.authService.remove(id);
   }
 }
