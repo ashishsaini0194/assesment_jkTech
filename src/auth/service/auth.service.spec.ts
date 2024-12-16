@@ -6,9 +6,10 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 export const mockAuthModel = {
   findOne: jest.fn(), // findOne
   create: jest.fn(), // create
-  find: jest.fn(), // dind
+  find: jest.fn(), //dind
   updateOne: jest.fn(), // updateOne
-  deleteOne: jest.fn(), // deleteOn
+  deleteOne: jest.fn(), //deleteon
+  login: jest.fn(),
 };
 
 export const mockBcrypt = {
@@ -63,5 +64,39 @@ describe('AuthService', () => {
     expect(data).toMatchObject(
       new HttpException('Email Already Exist!', HttpStatus.CONFLICT),
     );
+  });
+
+  it('should log in successfully', async () => {
+    const userData = { email: 'test@test.com', password: 'valid_password' };
+    const user = { email: 'test@test.com', password: 'hashed_valid_password' };
+
+    mockAuthModel.findOne.mockResolvedValue(user);
+    mockBcrypt.compare.mockResolvedValue(true);
+
+    const result = await service.login(userData);
+    expect(result).toEqual({
+      message: 'Logged in successfully!',
+      token: 'mocked_token',
+    });
+    expect(mockAuthModel.findOne).toHaveBeenCalledWith({
+      email: userData.email,
+    });
+    expect(mockBcrypt.compare).toHaveBeenCalledWith(
+      userData.password,
+      user.password,
+    );
+  });
+
+  it('should throw an exception for invalid credentials', async () => {
+    const userData = { email: 'test@test.com', password: 'invalid_password' };
+    mockAuthModel.findOne.mockResolvedValue(null); // Simulate user not found
+
+    await expect(service.login(userData)).rejects.toThrow(
+      new HttpException('Invalid user Creds!', HttpStatus.BAD_REQUEST),
+    );
+
+    expect(mockAuthModel.findOne).toHaveBeenCalledWith({
+      email: userData.email,
+    });
   });
 });
