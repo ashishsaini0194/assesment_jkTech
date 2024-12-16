@@ -22,7 +22,6 @@ export class AuthService {
 
   async create(createAuthDto: CreateAuthDto) {
     try {
-      console.log('service');
       const ifExist = await this.AuthModel.findOne(
         {
           email: createAuthDto.email,
