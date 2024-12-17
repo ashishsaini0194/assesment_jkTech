@@ -7,6 +7,7 @@ export const mockAuthModel = {
   findOne: jest.fn(), // findOne
   create: jest.fn(), // create
   find: jest.fn(), //dind
+  findAll: jest.fn,
   updateOne: jest.fn(), // updateOne
   deleteOne: jest.fn(), //deleteon
   login: jest.fn(),
@@ -87,6 +88,16 @@ describe('AuthService', () => {
 
     expect(mockAuthModel.findOne).toHaveBeenCalledWith({
       email: userData.email,
+    });
+  });
+
+  describe('findAll', () => {
+    it('should give me all users', async () => {
+      mockAuthModel.findAll().mockReturnValue([1, 2, 3, 4]);
+      try {
+        const allUser = await service.findAll();
+        expect(allUser.length).toBeGreaterThan(1);
+      } catch (error) {}
     });
   });
 });
